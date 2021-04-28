@@ -15,7 +15,7 @@ bot.onText(/\/start/, (msg) => {
                 "keyboard": [["1. Join NFT-QR Telegram Group", "2. Join NFT-QR Telegram Channel"], ["3. Your Twitter ID", "4. Your BSC wallet address (No exchange wallet!)"]]
             }
         };
-        bot.sendMessage(msg.chat.id, "Airdrop Rules 🖼️🎨🔣️ \n 1️⃣ Join the NFT-QR Telegram chat group \n  2️⃣ Join the NFT-QR Telegram Channel \n  3️⃣ Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends  4️⃣ Enter your Twitter ID (@twuitter)  \n 5️⃣ Submit your BSC wallet address in the bot (No exchange wallet!) \n", option);
+        bot.sendMessage(msg.chat.id, "Airdrop Rules 🖼️🎨🔣️ \n 1️⃣   Join the NFT-QR Telegram chat group \n\n  2️⃣   Join the NFT-QR Telegram Channel \n\n  3️⃣   Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends  4️⃣   Enter your Twitter ID (@twuitter)  \n\n 5️⃣   Submit your BSC wallet address in the bot (No exchange wallet!) \n\n", option);
     })
 })
 
