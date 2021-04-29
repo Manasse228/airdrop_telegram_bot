@@ -8,12 +8,20 @@ let t_username = '';
 let u_email = '';
 let e_wallet = '';
 
+let tuitter_username = '';
+let wallet_public_address = '';
+let previous_idChat_Twuitter = '';
+let previous_idChat_wallet = '';
+let step = 1;
+let validTwitterUsername = false;
+let validWalletAddress = false;
+let referal = 124583;
 
 
 function presentation(msg) {
     let agree = {
         "reply_markup": {
-            "keyboard": [["Continue"], ["", ""]]
+            "keyboard": [["Continue"]], resize_keyboard: true
         }
     };
     bot.sendMessage(msg.chat.id, msg.from.username + "! I am your friendly NFT-QR Airdrop Bot. \n\n  " +
@@ -21,19 +29,26 @@ function presentation(msg) {
         " 🔸For Completing the tasks - Get 100,000,000,000 NFTQR \n" +
         " 👫 For Each Valid Refer - Get 100,000,000 NFTQR \n\n " +
         "📘By Participating you are agreeing to the NFT-QR (Airdrop) Program Terms and Conditions. Please see pinned post for more information. \n\n" +
-        "Click Continue to proceed", agree);
+        'Click \*Continue* to proceed', agree);
+}
+
+function cancel() {
+    return {
+        "reply_markup": {
+            "keyboard": [["🚫 Cancel"]], resize_keyboard: true
+        }
+    };
 }
 
 bot.onText(/\/start/, (msg) => {
     bot.sendPhoto(msg.chat.id, img_url, {caption: "Welcome to Domeno Airdrop! 😍😍 \nPlease join our community and get 100 token.\n \n "}).then(() => {
         let option = {
             "reply_markup": {
-                "keyboard": [["1. Join NFT-QR Telegram Group", "2. Join NFT-QR Telegram Channel"], ["3. Your Twitter ID", "4. Your BSC wallet address (No exchange wallet!)"]]
+                "keyboard": [["1. Join NFT-QR Telegram Group", "2. Join NFT-QR Telegram Channel"], ["3. Your Twitter ID", "4. Your BSC wallet address (No exchange wallet!)"]],
+                resize_keyboard: true
             }
         };
-
         presentation(msg);
-        //bot.sendMessage(msg.chat.id, "Airdrop Rules 🖼️🎨🔣️ \n 1️⃣   Join the NFT-QR Telegram chat group \n\n  2️⃣   Join the NFT-QR Telegram Channel \n\n  3️⃣   Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends \n 4️⃣   Enter your Twitter ID (@twuitter)  \n\n 5️⃣   Submit your BSC wallet address in the bot (No exchange wallet!) \n\n", option);
     })
 
 
@@ -60,12 +75,12 @@ bot.on('message', (msg) => {
     if (send_text === "Continue") {
         let valid = {
             "reply_markup": {
-                "keyboard": [["🖍️ Submit details"], ["🔙 Back", "Main Menu 🔝"]]
+                "keyboard": [["🖍️ Submit details"], ["🔙 Back", "Main Menu 🔝"]], resize_keyboard: true
             }
         };
         bot.sendMessage(msg.chat.id, "Complete the tasks below! \n\n  " +
             "🔹 Join telegram group (https://t.me/joinchat/b5vsF_JddNZhNjc8) and Channel (https://t.me/NFT_QR_OfficialChannel) \n\n " +
-            "🔹 Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends \n" +
+            "🔹 Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends \n\n" +
             "Click Submit Details to submit your details to verify whether you completed all the tasks or not.", valid);
     }
 
@@ -76,7 +91,7 @@ bot.on('message', (msg) => {
     if (send_text === "🖍️ Submit details") {
         let valid = {
             "reply_markup": {
-                "keyboard": [["✅ Done"], ["🚫 Cancel"]]
+                "keyboard": [["✅ Done"], ["🚫 Cancel"]], resize_keyboard: true
             }
         };
         bot.sendMessage(msg.chat.id, "Complete the tasks below! \n\n  " +
@@ -85,23 +100,48 @@ bot.on('message', (msg) => {
     }
 
     if (send_text === "✅ Done") {
-        let valid = {
-            "reply_markup": {
-                "keyboard": [["🚫 Cancel"]]
-            }
-        };
+        previous_idChat_Twuitter = msg.chat.id;
         bot.sendMessage(msg.chat.id, "Complete the tasks below! \n\n  " +
-            "🔹Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends  \n\n " +
-            "Submit your Twitter profile link (Example: https://www.twitter.com/yourusername)", valid);
+            "🔹Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends  \n\n ", cancel());
     }
 
-    let re_bsc = /^0x[a-fA-F0-9]{40}$/g
-    if (re_bsc.test(send_text)) {
-        e_wallet = send_text;
-        bot.sendMessage(msg.chat.id, 'Confirm❓', {
+
+    let re_twuitter = /(?![\s,.?\/()"\'()*+,-./:;<=>?@[\\]^_`{|}~])@[A-Za-z]\w*?\b/g
+    if (re_twuitter.test(send_text) && step === 1) {
+        tuitter_username = send_text.trim();
+        validTwitterUsername = true;
+        bot.sendMessage(msg.chat.id, 'Your twitter username:  ' + send_text + '  Confirm❓', {
+            "reply_markup": {
+                "keyboard": [
+                    [{"text": "Yes ✅"}],
+                    [{"text": "Cancel ❌"}]
+                ],
+                "resize_keyboard": true
+            }
+        })
+    }
+    if ((send_text === "Cancel ❌" || (!re_twuitter.test(send_text) && previous_idChat_Twuitter && !validTwitterUsername)) && step === 1) {
+        validTwitterUsername = false;
+        bot.sendMessage(msg.chat.id, "Submit your Twitter username (Example: @nftToMoon) below", cancel());
+    }
+
+    if (send_text === "Yes ✅" && step === 1) {
+        previous_idChat_Twuitter = '';
+        previous_idChat_wallet = msg.chat.id;
+        step = 2;
+        bot.sendMessage(msg.chat.id, "Submit your Binance Smart Chain (BSC) wallet address 🔑\n\n " +
+            "Note: (Recommended wallet to use: Trust wallet, Metamask) Do not submit BNB address from Exchange.  \n\n ", cancel());
+    }
+
+
+    let re_wallet = /^0x[a-fA-F0-9]{40}$/g
+    if (re_wallet.test(send_text) && step === 2) {
+        wallet_public_address = send_text.trim();
+        validWalletAddress = true;
+        bot.sendMessage(msg.chat.id, "Your wallet's address :" + wallet_public_address + " Confirm❓", {
             reply_markup: {
                 keyboard: [
-                    [{"text": "Yes ✅"}],
+                    [{"text": "Valid ✅"}],
                     [{"text": "Cancel ❌"}]
                 ],
                 resize_keyboard: true
@@ -109,6 +149,43 @@ bot.on('message', (msg) => {
         })
     }
 
+    if (send_text === "Valid ✅" && step === 2) {
+        previous_idChat_wallet = '';
+        validWalletAddress = true;
+        let submit = {
+            "reply_markup": {
+                "keyboard": [["📊 Statistics"]], resize_keyboard: true
+            }
+        };
+        step = 3;
+        bot.sendMessage(msg.chat.id, "Thank you " + msg.from.username + " \n\n 🔗Your personal referral link: \n\n https://t.me/nftqr_bot?start=" + 124583 + " ", submit);
+
+    }
+
+    if ((send_text === "Cancel ❌" || (!re_wallet.test(send_text) && previous_idChat_wallet && !validWalletAddress)) && step === 2) {
+        validWalletAddress = false;
+        bot.sendMessage(msg.chat.id, "Submit your Bep20 BSC wallet address \n\n Note: Do not submit BNB address from Exchange.", cancel());
+    }
+
+    if (send_text === "📊 Statistics" && step > 2) {
+        let submit = {
+            "reply_markup": {
+                "keyboard": [["📊 Statistics"], ["🔙 Back", "Main Menu 🔝"]], resize_keyboard: true
+            }
+        };
+        bot.sendMessage(msg.chat.id, "Hi " + msg.from.username + " \n\n" +
+            "  Your, Airdrop Balance: 5000000000 NFTQR  \n\n " +
+            "Referral Balance: 0 NFT-QR \n " +
+            "📎 Referral link: https://t.me/nftqr_bot?start=" + 124583 + " \n " +
+            "👬 Referrals: 0 \n\n " +
+            "Your Submitted details: \n " +
+            "------------------- \n " +
+            "Telegram: " + msg.from.username + " \n " +
+            "Twitter: " + tuitter_username + " \n" +
+            "BEP-20 BSC wallet:" + wallet_public_address + " \n" +
+            "\n\n" +
+            "If your submitted data wrong then you can restart the bot and resubmit the data again by clicking /start before airdrop end.", submit);
+    }
 
 
     let step2_text = '2. Your Telegram Username';
@@ -118,7 +195,7 @@ bot.on('message', (msg) => {
 
     if (send_text.toString().charAt(0) === '@') {
         t_username = send_text;
-        bot.sendMessage(msg.chat.id, "Hello " + send_text);
+        //bot.sendMessage(msg.chat.id, "Hello " + send_text);
     }
 
     let step3_text = '3. E-mail address';
@@ -138,7 +215,7 @@ bot.on('message', (msg) => {
         bot.sendMessage(msg.chat.id, "Make sure that you have an erc20 wallet (0x) 🔑")
     }
     let re_eth = /^0x[a-fA-F0-9]{40}$/g
-    if (re_eth.test(send_text)) {
+    /*if (re_eth.test(send_text)) {
         e_wallet = send_text;
         bot.sendMessage(msg.chat.id, 'Confirm❓', {
             reply_markup: {
@@ -149,7 +226,7 @@ bot.on('message', (msg) => {
                 resize_keyboard: true
             }
         })
-    }
+    }*/
     let confirm = 'Yes ✅';
     if (send_text.toString().indexOf(confirm) === 0) {
         let db = firebase.database().ref('Airdrop');
@@ -177,6 +254,6 @@ bot.on('message', (msg) => {
     }
     let calcel = 'Cancel ❌';
     if (send_text.toString().indexOf(calcel) === 0) {
-        bot.sendMessage(msg.chat.id, "Good bye ✌️✌️");
+        //bot.sendMessage(msg.chat.id, "Good bye ✌️✌️");
     }
 });
