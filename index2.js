@@ -8,6 +8,22 @@ let t_username = '';
 let u_email = '';
 let e_wallet = '';
 
+
+
+function presentation(msg) {
+    let agree = {
+        "reply_markup": {
+            "keyboard": [["Continue"], ["", ""]]
+        }
+    };
+    bot.sendMessage(msg.chat.id, msg.from.username + "! I am your friendly NFT-QR Airdrop Bot. \n\n  " +
+        "✅Please complete all the tasks and submit details correctly to be eligible for the airdrop. \n\n " +
+        " 🔸For Completing the tasks - Get 100,000,000,000 NFTQR \n" +
+        " 👫 For Each Valid Refer - Get 100,000,000 NFTQR \n\n " +
+        "📘By Participating you are agreeing to the NFT-QR (Airdrop) Program Terms and Conditions. Please see pinned post for more information. \n\n" +
+        "Click Continue to proceed", agree);
+}
+
 bot.onText(/\/start/, (msg) => {
     bot.sendPhoto(msg.chat.id, img_url, {caption: "Welcome to Domeno Airdrop! 😍😍 \nPlease join our community and get 100 token.\n \n "}).then(() => {
         let option = {
@@ -15,12 +31,17 @@ bot.onText(/\/start/, (msg) => {
                 "keyboard": [["1. Join NFT-QR Telegram Group", "2. Join NFT-QR Telegram Channel"], ["3. Your Twitter ID", "4. Your BSC wallet address (No exchange wallet!)"]]
             }
         };
-        bot.sendMessage(msg.chat.id, "Airdrop Rules 🖼️🎨🔣️ \n 1️⃣   Join the NFT-QR Telegram chat group \n\n  2️⃣   Join the NFT-QR Telegram Channel \n\n  3️⃣   Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends  4️⃣   Enter your Twitter ID (@twuitter)  \n\n 5️⃣   Submit your BSC wallet address in the bot (No exchange wallet!) \n\n", option);
+
+        presentation(msg);
+        //bot.sendMessage(msg.chat.id, "Airdrop Rules 🖼️🎨🔣️ \n 1️⃣   Join the NFT-QR Telegram chat group \n\n  2️⃣   Join the NFT-QR Telegram Channel \n\n  3️⃣   Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends \n 4️⃣   Enter your Twitter ID (@twuitter)  \n\n 5️⃣   Submit your BSC wallet address in the bot (No exchange wallet!) \n\n", option);
     })
+
+
 })
 
 bot.on('message', (msg) => {
     let send_text = msg.text;
+    console.log('send_text ', send_text)
     let step1_text = '1. Join the Domeno Telegram group'
     if (send_text.toString().indexOf(step1_text) === 0) {
         let text = 'Domeno Telegram Group';
@@ -35,6 +56,60 @@ bot.on('message', (msg) => {
         let keyboard = {reply_markup: JSON.parse(keyboardStr)};
         bot.sendMessage(msg.chat.id, text, keyboard);
     }
+
+    if (send_text === "Continue") {
+        let valid = {
+            "reply_markup": {
+                "keyboard": [["🖍️ Submit details"], ["🔙 Back", "Main Menu 🔝"]]
+            }
+        };
+        bot.sendMessage(msg.chat.id, "Complete the tasks below! \n\n  " +
+            "🔹 Join telegram group (https://t.me/joinchat/b5vsF_JddNZhNjc8) and Channel (https://t.me/NFT_QR_OfficialChannel) \n\n " +
+            "🔹 Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends \n" +
+            "Click Submit Details to submit your details to verify whether you completed all the tasks or not.", valid);
+    }
+
+    if (send_text === "🔙 Back" || send_text === "Main Menu 🔝" || send_text === "🚫 Cancel") {
+        presentation(msg);
+    }
+
+    if (send_text === "🖍️ Submit details") {
+        let valid = {
+            "reply_markup": {
+                "keyboard": [["✅ Done"], ["🚫 Cancel"]]
+            }
+        };
+        bot.sendMessage(msg.chat.id, "Complete the tasks below! \n\n  " +
+            "🔹 Join Telegram group (https://t.me/joinchat/b5vsF_JddNZhNjc8) \n\n " +
+            "🔹 Join Telegram Channel (https://t.me/NFT_QR_OfficialChannel)", valid);
+    }
+
+    if (send_text === "✅ Done") {
+        let valid = {
+            "reply_markup": {
+                "keyboard": [["🚫 Cancel"]]
+            }
+        };
+        bot.sendMessage(msg.chat.id, "Complete the tasks below! \n\n  " +
+            "🔹Follow on Twitter (https://twitter.com/safemoonfast) Like and Retweet pinned post also tag 3 friends  \n\n " +
+            "Submit your Twitter profile link (Example: https://www.twitter.com/yourusername)", valid);
+    }
+
+    let re_bsc = /^0x[a-fA-F0-9]{40}$/g
+    if (re_bsc.test(send_text)) {
+        e_wallet = send_text;
+        bot.sendMessage(msg.chat.id, 'Confirm❓', {
+            reply_markup: {
+                keyboard: [
+                    [{"text": "Yes ✅"}],
+                    [{"text": "Cancel ❌"}]
+                ],
+                resize_keyboard: true
+            }
+        })
+    }
+
+
 
     let step2_text = '2. Your Telegram Username';
     if (send_text.toString().indexOf(step2_text) === 0) {
