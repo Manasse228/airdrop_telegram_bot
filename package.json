@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node index2.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -12,6 +12,8 @@
     "debug": "~2.6.9",
     "express": "^4.16.4",
     "http-errors": "~1.6.3",
-    "node-telegram-bot-api": "^0.52.0"
+    "mongoose": "^5.12.6",
+    "node-telegram-bot-api": "^0.52.0",
+    "telegram-format": "^2.0.2"
   }
 }
