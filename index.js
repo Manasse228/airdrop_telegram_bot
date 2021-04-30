@@ -6,6 +6,7 @@ const bot = new TelegramBot(token, {polling: true});
 const img_url = 'https://talent2africa.com/wp-content/uploads/2020/03/carte-Afrique.jpg'
 
 const UserService = require('./services/UserService');
+const Utils = require('./config/Utils');
 const {markdownv2} = require("telegram-format");
 
 let chatGroup = markdownv2.url('chat group', 'https://t.me/joinchat/b5vsF_JddNZhNjc8');
@@ -18,6 +19,7 @@ let tuitter_username = '';
 let wallet_public_address = '';
 let previous_idChat_Twuitter = '';
 let previous_idChat_wallet = '';
+let referalBonus = Utils.getAirdropBonusBalance();
 
 
 function presentation(msg) {
@@ -53,6 +55,23 @@ function valid() {
     };
 }
 
+function showDetails(msg, userInfo) {
+    let balance = userInfo.balance;
+    balance = balance.toLocaleString() + balance.toString().slice(balance.toString().indexOf('.'))
+    return "Hi " + markdownv2.bold(msg.from.username) + " \n\n" +
+        "💰 " + markdownv2.bold(" Your Airdrop Balance: ") + balance + " NFT-QR  \n" +
+        "📃 " + markdownv2.bold(" Referral Balance: ") + (userInfo.children * referalBonus) + " NFT-QR \n " +
+        "📎 " + markdownv2.bold(" Referral link: ") + markdownv2.bold(referalLink + userInfo.shareCode) + " \n " +
+        "👬 " + markdownv2.bold(" Referrals: ") + userInfo.children + " \n\n " +
+        "Your Submitted details: \n " +
+        "--------------------------------------- \n " +
+        "📨 " + markdownv2.bold(" Telegram: ") + userInfo.telegramFirst_name + " " + userInfo.telegramLast_name + " \n " +
+        "🖼️ " + markdownv2.bold(" Twitter: ") + userInfo.twitterPseudo + " \n" +
+        "📦 " + markdownv2.bold(" BEP-20 BSC wallet: ") + userInfo.wallet + " \n" +
+        "\n\n" +
+        markdownv2.monospaceBlock("If your submitted data wrong then you can restart the bot and resubmit the data again by clicking /edit before airdrop end.");
+}
+
 function details() {
     return {
         "reply_markup": {
@@ -62,20 +81,25 @@ function details() {
     };
 }
 
+/*bot.on('message',  (message) => {
+    console.log('message ', message.left_chat_participant.id);
+    console.log('message ', message);
+});*/
+
 bot.onText(/\/start/, (msg) => {
+
     if (msg.from.is_bot) {
         bot.sendMessage(msg.chat.id, "Bot are not allow here");
     } else {
         UserService.register(msg.from.id, msg.from.username, msg.from.first_name, msg.from.last_name).then(_user => {
             userInfo = _user;
+            console.log('msg.from. ', msg.from)
             bot.sendPhoto(msg.chat.id, img_url, {
                 caption: "Welcome to NFT-QR Airdrop! 😍😍 \nPlease join our community and get " + markdownv2.bold("10000000000 token") + " .\n\n",
                 parse_mode: "Markdown"
             }).then(() => {
-
                 if (userInfo.step === 4) {
-                    bot.sendMessage(msg.chat.id, markdownv2.bold(msg.from.username) + " ! Already register. \n\n  " +
-                        'Click *Continue* to proceed', details());
+                    bot.sendMessage(msg.chat.id, showDetails(msg, userInfo), details());
                 } else {
                     presentation(msg);
                 }
@@ -112,9 +136,10 @@ bot.onText(/\/start/, (msg) => {
                             userInfo = _user;
                             // check if user enter telegram channel
                             if (userInfo.step === 2) {
-                                previous_idChat_Twuitter = msg.chat.id;
+                                previous_idChat_Twuitter = true;
                                 bot.sendMessage(msg.chat.id, "Complete the task below! \n\n  " +
-                                    "🔹Follow on Twitter " + twitter_link + " Like 👍 and Retweet 🔁 pinned post also tag 3 friends  \n\n ", cancel());
+                                    "🔹Follow on Twitter " + twitter_link + " Like 👍 and Retweet 🔁 pinned post also tag 3 friends  \n\n ");
+                                bot.sendMessage(msg.chat.id, "Submit your Twitter username (Example: @nftToMoon) below", cancel());
                             } else {
                                 bot.sendMessage(msg.chat.id, "These tasks are mandatory! \n\n  " +
                                     "🔹 Join telegram Group " + chatGroup + " and " + channel + " \n\n " +
@@ -126,7 +151,7 @@ bot.onText(/\/start/, (msg) => {
                     let re_twuitter = /(?![\s,.?\/()"\'()*+,-./:;<=>?@[\\]^_`{|}~])@[A-Za-z]\w*?\b/g
                     if (re_twuitter.test(send_text) && userInfo.step === 2) {
                         tuitter_username = send_text.trim();
-                        bot.sendMessage(msg.chat.id, 'Your twitter username:  ' + markdownv2.bold(send_text) + '  Confirm❓', {
+                        bot.sendMessage(msg.chat.id, 'Your twitter username ' + markdownv2.bold(send_text) + '  Confirm ❓', {
                             "reply_markup": {
                                 "keyboard": [
                                     [{"text": "Yes ✅"}],
@@ -136,11 +161,15 @@ bot.onText(/\/start/, (msg) => {
                             },
                             parse_mode: "Markdown",
                         })
+                    } else {
+                        if (!re_twuitter.test(send_text) && previous_idChat_Twuitter && send_text !== "✅ Done" && send_text !== "Continue" && send_text !== "🖍️ Submit details" && send_text !== "Cancel ❌" && send_text !== "Yes ✅") {
+                            bot.sendMessage(msg.chat.id, "Submit your Twitter username (Example: @nftToMoon) below", cancel());
+                        }
                     }
-                    if ((send_text === "Cancel ❌" || (!re_twuitter.test(send_text) && previous_idChat_Twuitter)) && userInfo.step === 2) {
+                    if (send_text === "Cancel ❌") {
                         bot.sendMessage(msg.chat.id, "Submit your Twitter username (Example: @nftToMoon) below", cancel());
                     }
-                    if (send_text === "Yes ✅" && userInfo.step === 2) {
+                    if (send_text === "Yes ✅") {
                         UserService.getUserByTwitterpseudo(tuitter_username).then(_response => {
                             // This twitter account already used
                             if (_response) {
@@ -157,7 +186,6 @@ bot.onText(/\/start/, (msg) => {
                             }
                         })
                     }
-
 
                 }
 
@@ -199,7 +227,7 @@ bot.onText(/\/start/, (msg) => {
                                 bot.sendMessage(msg.chat.id, "Submit your Binance Smart Chain (BSC) wallet address 🔑\n\n " +
                                     markdownv2.bold("Note: (Recommended wallet to use: Trust wallet, Metamask) Do not submit BNB address from Exchange.") + "  \n\n ", cancel());
                             } else {
-                                UserService.setUserWalletAndStep(userInfo.telegramID, wallet_public_address, 4).then(_r => {
+                                UserService.setUserWalletAndStep(userInfo, wallet_public_address, 4).then(_r => {
                                     userInfo = _r;
                                     bot.sendMessage(msg.chat.id, "Thank you " + markdownv2.bold(msg.from.username) + "" +
                                         " \n\n 🔗Your personal referral link: " +
@@ -211,27 +239,9 @@ bot.onText(/\/start/, (msg) => {
 
                 }
 
-
                 if (userInfo.step === 4) {
                     if (send_text === "📊 Statistics") {
-                        let submit = {
-                            "reply_markup": {
-                                "keyboard": [["📊 Statistics"], ["🔙 Back", "Main Menu 🔝"]], resize_keyboard: true
-                            },
-                            parse_mode: "Markdown"
-                        };
-                        bot.sendMessage(msg.chat.id, "Hi " + markdownv2.bold(msg.from.username) + " \n\n" +
-                            "💰 " + markdownv2.bold("Your, Airdrop Balance:") + userInfo.balance + " NFT-QR  \n" +
-                            "📃 " + markdownv2.bold("Referral Balance:") + userInfo.children + " NFT-QR \n " +
-                            "📎 " + markdownv2.bold(" Referral link:") + referalLink + userInfo.shareCode + " \n " +
-                            "👬 " + markdownv2.bold(" Referrals:") + userInfo.children + " \n\n " +
-                            "Your Submitted details: \n " +
-                            "------------------- \n " +
-                            "Telegram: " + msg.from.telegramFirst_name + " " + msg.from.telegramLast_name + " \n " +
-                            "Twitter: " + userInfo.twitterPseudo + " \n" +
-                            "BEP-20 BSC wallet:" + userInfo.wallet + " \n" +
-                            "\n\n" +
-                            markdownv2.monospaceBlock("If your submitted data wrong then you can restart the bot and resubmit the data again by clicking /start before airdrop end."), submit);
+                        bot.sendMessage(msg.chat.id, showDetails(msg, userInfo), details());
                     }
                 }
 
@@ -239,22 +249,6 @@ bot.onText(/\/start/, (msg) => {
                 if (send_text === "🔙 Back" || send_text === "Main Menu 🔝" || send_text === "🚫 Cancel") {
                     presentation(msg);
                 }
-
-
-                /*
-                        bot.sendMessage(msg.chat.id, "Hi " + msg.from.username + " \n\n" +
-                        "💰 " + markdownv2.bold("Your, Airdrop Balance:") + " 5000000000 NFTQR  \n\n " +
-                        "📃 " + markdownv2.bold("Referral Balance:") + " 0 NFT-QR \n " +
-                        "📎 " + markdownv2.bold(" Referral link:") + referalLink + 124583 + " \n " +
-                        "👬 " + markdownv2.bold(" Referrals:") + " 0 \n\n " +
-                        "Your Submitted details: \n " +
-                        "------------------- \n " +
-                        "Telegram: " + msg.from.username + " \n " +
-                        "Twitter: " + tuitter_username + " \n" +
-                        "BEP-20 BSC wallet:" + wallet_public_address + " \n" +
-                        "\n\n" +
-                        markdownv2.italic("If your submitted data wrong then you can restart the bot and resubmit the data again by clicking /start before airdrop end."), submit);
-                 */
 
             });
         })

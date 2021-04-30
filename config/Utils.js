@@ -9,6 +9,12 @@ module.exports = {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return result;
-    }
+    },
+    getAirdropBalance() {
+        return 10000000000;
+    },
+    getAirdropBonusBalance() {
+        return 1000000000;
+    },
 
 };

@@ -58,6 +58,10 @@ const UserSchema = new mongoose.Schema({
     telegramChannel: {
         type: Boolean, default: false,
         required: false
+    },
+    create_at: {
+        type: Date, default: Date.now,
+        required: false
     }
 });
 
@@ -145,10 +149,10 @@ module.exports.addChild = (_telegramID, _amount) => {
     })
 };
 
-module.exports.setBalance = (_telegramID, _balance) => {
+module.exports.addChild = (_telegramID, _children) => {
     return new Promise((resolve) => {
         const query = {telegramID: _telegramID};
-        const newvalues = {$set: {balance: _balance}};
+        const newvalues = {$set: {children: _children}};
         let result = User.updateOne(query, newvalues);
         resolve(result);
     })

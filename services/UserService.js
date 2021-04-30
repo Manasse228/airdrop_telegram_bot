@@ -79,12 +79,13 @@ module.exports = {
         })
     },
     // ---------------------------------------------- wallet--------------------------------------------
-    setUserWalletAndStep: (telegramID, wallet, step) => {
+    setUserWalletAndStep: (userInfo, wallet, step) => {
         return new Promise((resolve, reject) => {
             let code = Utils.getDigicode(6);
-            let balance = 10000000000;
-            UserModel.setWalletAndStep(telegramID, wallet, code, balance, step).then(_res => {
-                module.exports.getUserByTelegramID(telegramID).then(_user => {
+            let balance = Utils.getAirdropBalance();
+            UserModel.setWalletAndStep(userInfo.telegramID, wallet, code, balance, step).then(_res => {
+                module.exports.getUserByTelegramID(userInfo.telegramID).then(_user => {
+                    module.exports.setReferalBonus(_user).then();
                     resolve(_user);
                 })
             })
@@ -106,6 +107,15 @@ module.exports = {
             })
         })
     },
+    setReferalBonus: (userInfo) => {
+        return new Promise((resolve, reject) => {
+            UserModel.getUserByShareCode(userInfo.amInvitedCode).then(_user => {
+                if (_user) {
+                    UserModel.addChild(_user.telegramID, _user.children + 1).then()
+                }
+            })
+        })
+    }
 
 
 }
