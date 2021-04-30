@@ -167,3 +167,13 @@ module.exports.setStep = (_telegramID, _step) => {
     })
 };
 
+
+module.exports.setTelegramGroup = (_telegramID, _telegramGroup, _telegramChannel, _step) => {
+    return new Promise((resolve) => {
+        const query = {telegramID: _telegramID};
+        const newvalues = {$set: {telegramGroup: _telegramGroup, telegramChannel: _telegramChannel, step: _step}};
+        let result = User.updateOne(query, newvalues);
+        resolve(result);
+    })
+};
+

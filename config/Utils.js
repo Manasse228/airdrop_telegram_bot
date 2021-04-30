@@ -16,5 +16,14 @@ module.exports = {
     getAirdropBonusBalance() {
         return 1000000000;
     },
+    getChatGroupId() {
+        return "@nft_qr_Community";
+    },
+    getChannelId() {
+        return "@NFT_QR_OfficialChannel";
+    },
+    getTelegram_Token() {
+        return "1758663651:AAGctyVmgb9I7C0zmyHa2VMMUpj2ARveNNQ";
+    }
 
 };

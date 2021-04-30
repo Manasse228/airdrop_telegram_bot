@@ -1,23 +1,31 @@
 const mongoConf = require('./../config/mongoDB');
 const UserModel = require('./../models/user');
 
+const request = require('request');
+
 const Utils = require('../config/Utils');
 
 module.exports = {
 
     // ---------------------------------------------- Register--------------------------------------------
     // Save user telegram id
-    register: (telegramID, telegramUsername, telegramFirst_name, telegramLast_name) => {
+    register: (telegramID, telegramUsername, telegramFirst_name, telegramLast_name, msg) => {
         return new Promise((resolve, reject) => {
             UserModel.getUserByTelegramID(telegramID).then(_user => {
                 if (_user) {
                     resolve(_user);
                 } else {
+                    let parts = msg.split('/start');
+                    let code = "";
+                    if (parts.length >= 2 && parts[1].trim()) {
+                        code = parts[1].trim();
+                    }
                     const userModelInstance = new UserModel();
                     userModelInstance.telegramID = telegramID;
                     userModelInstance.telegramUsername = telegramUsername;
                     userModelInstance.telegramFirst_name = telegramFirst_name;
                     userModelInstance.telegramLast_name = telegramLast_name;
+                    userModelInstance.amInvitedCode = code;
                     userModelInstance.save()
                         .then((_user) => {
                             resolve(_user);
@@ -26,6 +34,13 @@ module.exports = {
                             resolve("");
                         });
                 }
+            })
+        })
+    },
+    getUserByShareCode: (shareCode) => {
+        return new Promise((resolve, reject) => {
+            UserModel.getUserByShareCode(shareCode).then(_user => {
+                resolve(_user);
             })
         })
     },
@@ -115,7 +130,42 @@ module.exports = {
                 }
             })
         })
-    }
+    },
+    // ---------------------------------------------- Chek on Telegram Group & Channel --------------------------------------------
+    checUserOnChatOrChannel: (userInfo) => {
+        // Chat group
+        // https://api.telegram.org/bot1758663651:AAGctyVmgb9I7C0zmyHa2VMMUpj2ARveNNQ/promoteChatMember?chat_id=@nft_qr_Community&user_id=437546311
+        //  channel
+        // https://api.telegram.org/bot1758663651:AAGctyVmgb9I7C0zmyHa2VMMUpj2ARveNNQ/promoteChatMember?chat_id=@NFT_QR_OfficialChannel&user_id=437546311
+        ///// let link = "https://api.telegram.org/bot"+token+"/promoteChatMember?chat_id="+groupId+"y&user_id="+telegramId;
+        return new Promise((resolve, reject) => {
+            let telegramID = userInfo.telegramID;
+            let link = "https://api.telegram.org/bot" + Utils.getTelegram_Token() + "/promoteChatMember?chat_id=";
+            let chatLink = link + Utils.getChatGroupId() + "&user_id=" + telegramID;
+            let channelLink = link + Utils.getChannelId() + "&user_id=" + telegramID;
+            let response = {chat: false, channel: false}
 
+            request(chatLink, {json: true}, (err, res, body) => {
+                if (body) {
+                    response.chat = !!body.ok;
+                    request(channelLink, {json: true}, (err, res, body) => {
+                        if (body) {
+                            response.channel = !!body.ok;
+                            let step = (response.chat && response.channel) ? 2 : 1;
+                            UserModel.setTelegramGroup(telegramID, response.chat, response.channel, step).then(_r => {
+                                module.exports.getUserByTelegramID(telegramID).then(_user => {
+                                    resolve(_user);
+                                })
+                            });
+                        } else {
+                            resolve(response);
+                        }
+                    });
+                } else {
+                    resolve(response);
+                }
+            });
+        })
+    }
 
 }
