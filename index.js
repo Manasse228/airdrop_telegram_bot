@@ -62,12 +62,14 @@ function validTelegramTask() {
     }
 }
 
+function formatNumber(text) {
+    return text.toLocaleString() + text.toString().slice(text.toString().indexOf('.'));
+}
+
 function showDetails(msg, userInfo) {
-    let balance = userInfo.balance;
-    balance = balance.toLocaleString() + balance.toString().slice(balance.toString().indexOf('.'))
     return "Hi " + getUserCorectName(msg) + " \n\n" +
-        "💰 " + markdownv2.bold(" Your Airdrop Balance: ") + balance + " NFT-QR  \n" +
-        "📃 " + markdownv2.bold(" Referral Balance: ") + (userInfo.children * referalBonus) + " NFT-QR \n " +
+        "💰 " + markdownv2.bold(" Your Airdrop Balance: ") + formatNumber(userInfo.balance) + " NFT-QR  \n" +
+        "📃 " + markdownv2.bold(" Referral Balance: ") + formatNumber(userInfo.children * Utils.getAirdropBonusBalance()) + " NFT-QR \n " +
         "📎 " + markdownv2.bold(" Referral link: ") + markdownv2.bold(referalLink + userInfo.shareCode) + " \n " +
         "👬 " + markdownv2.bold(" Referrals: ") + userInfo.children + " \n\n " +
         "Your Submitted details: \n " +
