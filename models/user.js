@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
     },
     telegramUsername: {
         type: String,
-        required: true
+        required: false
     },
     telegramFirst_name: {
         type: String,
@@ -176,4 +176,6 @@ module.exports.setTelegramGroup = (_telegramID, _telegramGroup, _telegramChannel
         resolve(result);
     })
 };
+
+//export PATH="$PATH:/opt/alt/alt-nodejs10/root/usr/bin/"
 

@@ -1,30 +1,55 @@
-const mongoConf = require('./../config/mongoDB');
-const UserModel = require('./../models/user');
+//const mongoConf = require('./../config/mongoDB');
+//const UserModel = require('./../models/user');
 
 const request = require('request');
 
 const Utils = require('../config/Utils');
+let user = {
+    telegramID: "13",
+    telegramUsername: "Username",
+    telegramFirst_name: "First Name",
+    telegramLast_name: "Last Name",
+    twitterPseudo: "",
+    wallet: "",
+    shareCode: "",
+    amInvitedCode: "",
+    children: 0,
+    balance: 1000,
+    step: 0,
+    hashLink: "",
+    telegramGroup: false,
+    telegramChannel: false,
+    create_at: ""
+}
 
 module.exports = {
 
     // ---------------------------------------------- Register--------------------------------------------
     // Save user telegram id
-    register: (telegramID, telegramUsername, telegramFirst_name, telegramLast_name, msg) => {
+    register: (msg, telegramID) => {
         return new Promise((resolve, reject) => {
+
+            resolve(user);
+            /*
             UserModel.getUserByTelegramID(telegramID).then(_user => {
                 if (_user) {
                     resolve(_user);
                 } else {
-                    let parts = msg.split('/start');
+                    let parts = msg.text.split('/start');
                     let code = "";
                     if (parts.length >= 2 && parts[1].trim()) {
                         code = parts[1].trim();
                     }
+
+                    let userName = (msg.from && msg.from.username) ? msg.from.username : "";
+                    let firstName = (msg.from && msg.from.first_name) ? msg.from.first_name : "";
+                    let lastName = (msg.from && msg.from.last_name) ? msg.from.last_name : "";
+
                     const userModelInstance = new UserModel();
                     userModelInstance.telegramID = telegramID;
-                    userModelInstance.telegramUsername = telegramUsername;
-                    userModelInstance.telegramFirst_name = telegramFirst_name;
-                    userModelInstance.telegramLast_name = telegramLast_name;
+                    userModelInstance.telegramUsername = userName;
+                    userModelInstance.telegramFirst_name = firstName;
+                    userModelInstance.telegramLast_name = lastName;
                     userModelInstance.amInvitedCode = code;
                     userModelInstance.save()
                         .then((_user) => {
@@ -35,62 +60,96 @@ module.exports = {
                         });
                 }
             })
+             */
+
         })
     },
     getUserByShareCode: (shareCode) => {
         return new Promise((resolve, reject) => {
-            UserModel.getUserByShareCode(shareCode).then(_user => {
-                resolve(_user);
-            })
+
+            resolve();
+            /*
+                UserModel.getUserByShareCode(shareCode).then(_user => {
+                                resolve(_user);
+                            })
+             */
+
         })
     },
     // ---------------------------------------------- Step--------------------------------------------
     // Change user step
     setUserStep: (telegramID, step) => {
         return new Promise((resolve, reject) => {
+
+            resolve();
+            /*
             UserModel.setStep(telegramID, step).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
+             */
+
+
         })
     },
     // ---------------------------------------------- Get user by telegram ID--------------------------------------------
     // get user info by telegramId
     getUserByTelegramID: (telegramID) => {
         return new Promise((resolve, reject) => {
+
+            resolve();
+            /*
             UserModel.getUserByTelegramID(telegramID).then(user => {
                 resolve(user);
             })
+             */
+
         })
     },
     // ---------------------------------------------- twitter--------------------------------------------
     // Set user twitter name during register
     setUserTwitterAndStep: (telegramID, twitterName, step) => {
         return new Promise((resolve, reject) => {
+
+            resolve();
+            /*
             UserModel.setTwitterPseudoAndStep(telegramID, twitterName, step).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
+             */
+
         })
     },
     // Set user twitter
     setUserTwitter: (telegramID, twitterName) => {
         return new Promise((resolve, reject) => {
+
+            resolve();
+            /*
             UserModel.setTwitterPseudoAndStep(telegramID, twitterName).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
+             */
+
         })
     },
     // Get user by twitter pseudo
     getUserByTwitterpseudo: (twitterPseudo) => {
         return new Promise((resolve, reject) => {
+
+            resolve();
+            /*
             UserModel.getUserByTwitterPseudo(twitterPseudo).then(user => {
                 resolve(user);
             })
+             */
+
+
         })
     },
     // ---------------------------------------------- wallet--------------------------------------------
@@ -98,37 +157,60 @@ module.exports = {
         return new Promise((resolve, reject) => {
             let code = Utils.getDigicode(6);
             let balance = Utils.getAirdropBalance();
+
+
+            resolve();
+            /*
             UserModel.setWalletAndStep(userInfo.telegramID, wallet, code, balance, step).then(_res => {
                 module.exports.getUserByTelegramID(userInfo.telegramID).then(_user => {
                     module.exports.setReferalBonus(_user).then();
                     resolve(_user);
                 })
             })
+             */
+
         })
     },
     setUserWallet: (telegramID, wallet) => {
         return new Promise((resolve, reject) => {
+
+
+            resolve();
+            /*
             UserModel.setWallet(telegramID, wallet).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
+             */
+
         })
     },
     getUserByWallet: (wallet) => {
         return new Promise((resolve, reject) => {
+
+
+            resolve();
+            /*
             UserModel.getUserByWallet(wallet).then(user => {
                 resolve(user);
             })
+             */
+
         })
     },
     setReferalBonus: (userInfo) => {
         return new Promise((resolve, reject) => {
+
+            resolve();
+            /*
             UserModel.getUserByShareCode(userInfo.amInvitedCode).then(_user => {
                 if (_user) {
                     UserModel.addChild(_user.telegramID, _user.children + 1).then()
                 }
             })
+             */
+
         })
     },
     // ---------------------------------------------- Chek on Telegram Group & Channel --------------------------------------------
@@ -140,7 +222,7 @@ module.exports = {
         ///// let link = "https://api.telegram.org/bot"+token+"/promoteChatMember?chat_id="+groupId+"y&user_id="+telegramId;
         return new Promise((resolve, reject) => {
             let telegramID = userInfo.telegramID;
-            let link = "https://api.telegram.org/bot" + Utils.getTelegram_Token() + "/promoteChatMember?chat_id=";
+            let link = "https://api.telegram.org/bot" + Utils.getNFT_QR_Inspector_Token() + "/promoteChatMember?chat_id=";
             let chatLink = link + Utils.getChatGroupId() + "&user_id=" + telegramID;
             let channelLink = link + Utils.getChannelId() + "&user_id=" + telegramID;
             let response = {chat: false, channel: false}
@@ -152,11 +234,17 @@ module.exports = {
                         if (body) {
                             response.channel = !!body.ok;
                             let step = (response.chat && response.channel) ? 2 : 1;
-                            UserModel.setTelegramGroup(telegramID, response.chat, response.channel, step).then(_r => {
-                                module.exports.getUserByTelegramID(telegramID).then(_user => {
+
+                            resolve();
+                            /*
+                                UserModel.setTelegramGroup(telegramID, response.chat, response.channel, step).then(_r => {
+                                    module.exports.getUserByTelegramID(telegramID).then(_user => {
                                     resolve(_user);
-                                })
-                            });
+                                    })
+                                });
+                            */
+
+
                         } else {
                             resolve(response);
                         }
