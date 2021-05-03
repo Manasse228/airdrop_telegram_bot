@@ -21,12 +21,7 @@ module.exports = {
     getChannelId() {
         return "@NFT_QR_OfficialChannel";
     },
-    getTelegram_Token() {
-        return "1723060413:AAE6GBN7o7pbF6_CrNExX3gOXQEE2kgAtNw";
-    },
-    getNFT_QR_Inspector_Token() {
-        return "1792905624:AAEw1E3ObI6W2C-ZhsYrg7mGKItdVh4rKvo";
-    },
+
     getTwuitterRegex() {
         return /(?![\s,.?\/()"\'()*+,-./:;<=>?@[\\]^_`{|}~])@[A-Za-z]\w*?\b/g;
     },

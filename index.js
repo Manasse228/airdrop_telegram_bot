@@ -3,7 +3,7 @@ const UserService = require('./services/UserService');
 const Utils = require('./config/Utils');
 const {markdownv2} = require("telegram-format");
 
-const bot = new TelegramBot(Utils.getTelegram_Token(), {polling: true, interval: 1000});
+let bot = new TelegramBot(Utils.getTelegram_Token(), {polling: true});
 
 //bot = new TelegramBot(Utils.getTelegram_Token());
 //bot.setWebHook('https://airdrop-telegram-bot.herokuapp.com' + bot.token).then();
