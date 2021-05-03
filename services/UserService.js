@@ -1,26 +1,9 @@
-//const mongoConf = require('./../config/mongoDB');
-//const UserModel = require('./../models/user');
+const mongoConf = require('./../config/mongoDB');
+const UserModel = require('./../models/user');
 
 const request = require('request');
 
 const Utils = require('../config/Utils');
-let user = {
-    telegramID: "13",
-    telegramUsername: "Username",
-    telegramFirst_name: "First Name",
-    telegramLast_name: "Last Name",
-    twitterPseudo: "",
-    wallet: "",
-    shareCode: "",
-    amInvitedCode: "",
-    children: 0,
-    balance: 1000,
-    step: 0,
-    hashLink: "",
-    telegramGroup: false,
-    telegramChannel: false,
-    create_at: ""
-}
 
 module.exports = {
 
@@ -29,8 +12,6 @@ module.exports = {
     register: (msg, telegramID) => {
         return new Promise((resolve, reject) => {
 
-            resolve(user);
-            /*
             UserModel.getUserByTelegramID(telegramID).then(_user => {
                 if (_user) {
                     resolve(_user);
@@ -60,19 +41,15 @@ module.exports = {
                         });
                 }
             })
-             */
 
         })
     },
     getUserByShareCode: (shareCode) => {
         return new Promise((resolve, reject) => {
 
-            resolve();
-            /*
-                UserModel.getUserByShareCode(shareCode).then(_user => {
-                                resolve(_user);
-                            })
-             */
+            UserModel.getUserByShareCode(shareCode).then(_user => {
+                resolve(_user);
+            })
 
         })
     },
@@ -81,15 +58,11 @@ module.exports = {
     setUserStep: (telegramID, step) => {
         return new Promise((resolve, reject) => {
 
-            resolve();
-            /*
             UserModel.setStep(telegramID, step).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
-             */
-
 
         })
     },
@@ -98,12 +71,9 @@ module.exports = {
     getUserByTelegramID: (telegramID) => {
         return new Promise((resolve, reject) => {
 
-            resolve();
-            /*
             UserModel.getUserByTelegramID(telegramID).then(user => {
                 resolve(user);
             })
-             */
 
         })
     },
@@ -112,14 +82,11 @@ module.exports = {
     setUserTwitterAndStep: (telegramID, twitterName, step) => {
         return new Promise((resolve, reject) => {
 
-            resolve();
-            /*
             UserModel.setTwitterPseudoAndStep(telegramID, twitterName, step).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
-             */
 
         })
     },
@@ -127,14 +94,11 @@ module.exports = {
     setUserTwitter: (telegramID, twitterName) => {
         return new Promise((resolve, reject) => {
 
-            resolve();
-            /*
             UserModel.setTwitterPseudoAndStep(telegramID, twitterName).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
-             */
 
         })
     },
@@ -142,13 +106,9 @@ module.exports = {
     getUserByTwitterpseudo: (twitterPseudo) => {
         return new Promise((resolve, reject) => {
 
-            resolve();
-            /*
             UserModel.getUserByTwitterPseudo(twitterPseudo).then(user => {
                 resolve(user);
             })
-             */
-
 
         })
     },
@@ -158,59 +118,44 @@ module.exports = {
             let code = Utils.getDigicode(6);
             let balance = Utils.getAirdropBalance();
 
-
-            resolve();
-            /*
             UserModel.setWalletAndStep(userInfo.telegramID, wallet, code, balance, step).then(_res => {
                 module.exports.getUserByTelegramID(userInfo.telegramID).then(_user => {
                     module.exports.setReferalBonus(_user).then();
                     resolve(_user);
                 })
             })
-             */
+
 
         })
     },
     setUserWallet: (telegramID, wallet) => {
         return new Promise((resolve, reject) => {
 
-
-            resolve();
-            /*
             UserModel.setWallet(telegramID, wallet).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
-             */
 
         })
     },
     getUserByWallet: (wallet) => {
         return new Promise((resolve, reject) => {
 
-
-            resolve();
-            /*
             UserModel.getUserByWallet(wallet).then(user => {
                 resolve(user);
             })
-             */
 
         })
     },
     setReferalBonus: (userInfo) => {
         return new Promise((resolve, reject) => {
 
-            resolve();
-            /*
             UserModel.getUserByShareCode(userInfo.amInvitedCode).then(_user => {
                 if (_user) {
                     UserModel.addChild(_user.telegramID, _user.children + 1).then()
                 }
             })
-             */
-
         })
     },
     // ---------------------------------------------- Chek on Telegram Group & Channel --------------------------------------------
@@ -235,15 +180,11 @@ module.exports = {
                             response.channel = !!body.ok;
                             let step = (response.chat && response.channel) ? 2 : 1;
 
-                            resolve();
-                            /*
-                                UserModel.setTelegramGroup(telegramID, response.chat, response.channel, step).then(_r => {
-                                    module.exports.getUserByTelegramID(telegramID).then(_user => {
+                            UserModel.setTelegramGroup(telegramID, response.chat, response.channel, step).then(_r => {
+                                module.exports.getUserByTelegramID(telegramID).then(_user => {
                                     resolve(_user);
-                                    })
-                                });
-                            */
-
+                                })
+                            });
 
                         } else {
                             resolve(response);
