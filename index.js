@@ -3,10 +3,10 @@ const UserService = require('./services/UserService');
 const Utils = require('./config/Utils');
 const {markdownv2} = require("telegram-format");
 
-//let bot = new TelegramBot(Utils.getTelegram_Token(), {polling: true, interval: 1000});
+const bot = new TelegramBot(Utils.getTelegram_Token(), {polling: true, interval: 1000});
 
-bot = new TelegramBot(Utils.getTelegram_Token());
-bot.setWebHook('https://airdrop-telegram-bot.herokuapp.com' + bot.token).then();
+//bot = new TelegramBot(Utils.getTelegram_Token());
+//bot.setWebHook('https://airdrop-telegram-bot.herokuapp.com' + bot.token).then();
 //let bot = new TelegramBot(Utils.getTelegram_Token(), {polling: true});
 const img_url = 'https://talent2africa.com/wp-content/uploads/2020/03/carte-Afrique.jpg'
 
