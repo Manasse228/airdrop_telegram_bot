@@ -70,46 +70,38 @@ module.exports = {
     // get user info by telegramId
     getUserByTelegramID: (telegramID) => {
         return new Promise((resolve, reject) => {
-
             UserModel.getUserByTelegramID(telegramID).then(user => {
                 resolve(user);
             })
-
         })
     },
     // ---------------------------------------------- twitter--------------------------------------------
     // Set user twitter name during register
     setUserTwitterAndStep: (telegramID, twitterName, step) => {
         return new Promise((resolve, reject) => {
-
             UserModel.setTwitterPseudoAndStep(telegramID, twitterName, step).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
-
         })
     },
     // Set user twitter
     setUserTwitter: (telegramID, twitterName) => {
         return new Promise((resolve, reject) => {
-
             UserModel.setTwitterPseudoAndStep(telegramID, twitterName).then(_res => {
                 module.exports.getUserByTelegramID(telegramID).then(_user => {
                     resolve(_user);
                 })
             })
-
         })
     },
     // Get user by twitter pseudo
     getUserByTwitterpseudo: (twitterPseudo) => {
         return new Promise((resolve, reject) => {
-
             UserModel.getUserByTwitterPseudo(twitterPseudo).then(user => {
                 resolve(user);
             })
-
         })
     },
     // ---------------------------------------------- wallet--------------------------------------------
@@ -124,8 +116,6 @@ module.exports = {
                     resolve(_user);
                 })
             })
-
-
         })
     },
     setUserWallet: (telegramID, wallet) => {
@@ -166,7 +156,7 @@ module.exports = {
         // https://api.telegram.org/bot1758663651:AAGctyVmgb9I7C0zmyHa2VMMUpj2ARveNNQ/promoteChatMember?chat_id=@NFT_QR_OfficialChannel&user_id=437546311
         ///// let link = "https://api.telegram.org/bot"+token+"/promoteChatMember?chat_id="+groupId+"y&user_id="+telegramId;
         return new Promise((resolve, reject) => {
-            let telegramID = userInfo.telegramID;
+            let telegramID = userInfo;
             let link = "https://api.telegram.org/bot" + Utils.getNFT_QR_Inspector_Token() + "/promoteChatMember?chat_id=";
             let chatLink = link + Utils.getChatGroupId() + "&user_id=" + telegramID;
             let channelLink = link + Utils.getChannelId() + "&user_id=" + telegramID;
